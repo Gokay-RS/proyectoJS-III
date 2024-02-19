@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/practicaObligatoria.css" />
+    <title>Práctica Obligatoria</title>
+  </head>
+  <body>
+    <h1>Gestor Comercial</h1>
+    <div id="clientes" class="panel">
+      <h1>Clientes</h1>
+      <form id="frmComercial" name="frmComercial">
+        <label><h4>Comercial:</h4></label>
+        <select name="comerciales"></select>
+      </form>
+    </div>
+    <div id="controles" class="panel">
+      <h1>Controles</h1>
+      <form id="frmControles" name="frmControles">
+        <label><h4>Categoría:</h4></label>
+        <select name="categorias"></select
+        ><br />
+        <label><h4>Productos:</h4></label>
+        <select name="productos"></select
+        ><br />
+      </form>
+      <br /><br /><br />
+      <hr />
+      <br /><br /><br />
+      <button id="btnGestionCategorias" class="tecla">Gestión Categorías</button>
+      <button id="btnGestionProductos" class="tecla">Gestión Productos</button>
+      <button id="btnGestionComerciales" class="tecla">Gestión Comerciales</button>
+      <button id="btnGestionClientes" class="tecla">Gestión Clientes</button>
+    </div>
+    <div id="formularios" class="panel">
+      <h1>CRUD</h1>
+      <hr />
+      <!-- EJEMPLOS DE FORMULARIOS -->
+      <form id="frmNuevaCategoria" name="frmNuevaCategoria" style="visibility: visible">
+        <label><h4>Nueva categoría:</h4></label>
+        <input type="text" id="txtNuevaCategoria" /><br /><br />
+        <input type="submit" value="Guardar" />
+      </form>
+      <hr />
+      <form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible">
+        <label><h4>Categoría a borrar:</h4></label>
+        <input type="text" id="txtBorrarCategoria" /><br /><br />
+        <input type="submit" value="Borrar" />
+      </form>
+      <hr />
+    </div>
+    <script src="./js/clases.js"></script>
+    <script src="./js/practicaObligatoria.js"></script>
+  </body>
+</html>

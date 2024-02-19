@@ -30,6 +30,7 @@ function mostrarComerciales(datosExtraidos) {
             //const nombreComercial = datosComerciales[key];
         }
     }
+    gestor.comercialActual=comboComerciales[0].value;
     //console.log(datosComerciales);
     mostrarClientes(datosExtraidos,datosComerciales,arrayNombres);
 };
@@ -38,20 +39,12 @@ function mostrarComerciales(datosExtraidos) {
 
 function mostrarClientes(datosExtraidos,comerciales,nombreComerciales) {
     let indice;
-    for (const key in comerciales) {
-        if (Object.hasOwnProperty.call(comerciales, key)) {
-            if (key === gestor.comercialActual) {
-                indice = comerciales[key].indexOf();
-            }
-            
-        }
+    for (let i = 0; i < comerciales.length; i++) {
+    
     }
     const datosClientes = datosExtraidos.clientes;
-    
-    
-
-    console.log(nombreComerciales , datosClientes, indice);
-}
+    console.log(nombreComerciales , datosClientes, comerciales.indexOf());
+};
 
 extraerApi()
 .then (data => {

@@ -30,7 +30,7 @@ function mostrarComerciales(datosExtraidos) {
             //const nombreComercial = datosComerciales[key];
         }
     }
-    gestor.comercialActual=comboComerciales[0].value;
+    gestor.comercialActual=comboComerciales.selectedIndex;
     //console.log(datosComerciales);
     mostrarClientes(datosExtraidos,datosComerciales,arrayNombres);
 };
@@ -39,11 +39,9 @@ function mostrarComerciales(datosExtraidos) {
 
 function mostrarClientes(datosExtraidos,comerciales,nombreComerciales) {
     let indice;
-    for (let i = 0; i < comerciales.length; i++) {
-    
-    }
+
     const datosClientes = datosExtraidos.clientes;
-    console.log(nombreComerciales , datosClientes, comerciales.indexOf());
+    console.log(nombreComerciales , datosClientes, );
 };
 
 extraerApi()
@@ -52,5 +50,5 @@ extraerApi()
 });
 
 comboComerciales.addEventListener('change', ()=>{
-    gestor.comercialActual = comboComerciales.value;
+    gestor.comercialActual = comboComerciales.selectedIndex;
 })

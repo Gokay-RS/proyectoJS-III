@@ -34,22 +34,33 @@
       <button id="btnGestionComerciales" class="tecla">Gestión Comerciales</button>
       <button id="btnGestionClientes" class="tecla">Gestión Clientes</button>
     </div>
-    <div id="formularios" class="panel">
+    <div class="panel"> <!--! Le he quitado el id a este div, que era "formularios", para usarlo posteriormente en un div personal-->
       <h1>CRUD</h1>
       <hr />
       <!-- EJEMPLOS DE FORMULARIOS -->
-      <form id="frmNuevaCategoria" name="frmNuevaCategoria" style="visibility: visible">
-        <label><h4>Nueva categoría:</h4></label>
-        <input type="text" id="txtNuevaCategoria" /><br /><br />
-        <input type="submit" value="Guardar" />
-      </form>
-      <hr />
-      <form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible">
-        <label><h4>Categoría a borrar:</h4></label>
-        <input type="text" id="txtBorrarCategoria" /><br /><br />
-        <input type="submit" value="Borrar" />
-      </form>
-      <hr />
+      <div id="formularios">
+        <form id="frmNuevaCategoria" name="frmNuevaCategoria" style="visibility: visible" action="javascript:insertarCategoria()">
+          <label><h4>Nueva categoría:</h4></label>
+          <input type="text" id="txtNuevaCategoria" /><br /><br />
+          <input type="submit" value="Guardar" />
+        </form>
+        <hr />
+        <form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="javascript:borrarCategorias()">
+          <label><h4>Categoría a borrar:</h4></label>
+          <input type="text" id="txtBorrarCategoria" /><br /><br />
+          <input type="submit" value="Borrar" />
+        </form>
+        <hr />
+        <!--^ Modificación-->
+        <form id="frmEditarCategoria" name="frmBorrarCategoria" style="visibility: visible">
+          <label><h4>Categoría a actualizar:</h4></label>
+          <input type="text" id="txtActualizarCategoria" /><br />
+          <label><h4>Nuevo nombre para la categoria</h4></label>
+          <input type="text" if="nuevotxtActualizarCategoria" /><br /><br />
+          <input type="submit" value="Actualizar" />
+        </form>
+      <!--//-->
+      </div>
     </div>
     <script src="./js/clases.js"></script>
     <script src="./js/practicaObligatoria.js"></script>

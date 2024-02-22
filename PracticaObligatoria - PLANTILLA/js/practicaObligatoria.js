@@ -4,6 +4,7 @@ const comboComerciales = frmComercial[0];
 const comboCategorias = frmControles[0];
 const comboProductos = frmControles[1];
 const botonGestionCategoria = document.getElementById('btnGestionCategorias');
+const botonGestionProductos = document.getElementById('btnGestionProductos');
 
 gestor = new Gestor();
 catalogo = new Catalogo();
@@ -87,6 +88,10 @@ function mostrarProductos(productos) {
             comboProductos.appendChild(option);
         }
     }
+    //? Fragmento de codigo para el relleno automatico del campo de texto para borrar la categoria
+    let categorias = comboCategorias.querySelectorAll("option") //^ Introducimos dentro de la variable todos los options del comboBox
+    frmBorrarCategoria[0].value=categorias[comboCategorias.selectedIndex].textContent; //^ Igualamos el valor del input a el nombre de la categoria seleccionada
+    frmEditarCategoria[0].value=categorias[comboCategorias.selectedIndex].textContent; //^ Igualamos el valor del input a el nombre de la categoria seleccionada
 };
 
 function gestionCategorias() {
@@ -101,33 +106,52 @@ function gestionCategorias() {
                 '<hr />' +
                 '<form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible">' +
                 '<label><h4>Categoría a borrar:</h4></label>' +
-                '<input type="text" id="txtBorrarCategoria" /><br /><br />' +
+                '<input type="text" id="txtBorrarCategoria" disabled /><br /><br />' +
                 '<input type="submit" value="Borrar" />' +
                 '</form>' +
                 '<hr />' +
                 '<form id="frmEditarCategoria" name="frmBorrarCategoria" style="visibility: visible">' +
                 '<label><h4>Categoría a actualizar:</h4></label>' +
-                '<input type="text" id="txtActualizarCategoria" /><br />' +
+                '<input type="text" id="txtActualizarCategoria" disabled /><br />' +
                 '<label><h4>Nuevo nombre para la categoria</h4></label>' +
                 '<input type="text" if="nuevotxtActualizarCategoria" /><br /><br />' +
                 '<input type="submit" value="Actualizar" />' +
                 '</form>';
 
         document.getElementById('formularios').innerHTML=salida;
-        frmNuevaCategoria.addEventListener('submit', insertarCategoria);
+        frmNuevaCategoria.addEventListener('submit', ()=>{
+            event.preventDefault();
+            insertarCategoria(frmNuevaCategoria[0].value.trim());
+        });
+        frmBorrarCategoria.addEventListener('submit', ()=>{
+            event.preventDefault();
+            borrarCategorias();
+        });
+        frmEditarCategoria.addEventListener('submit', ()=>{
+            event.preventDefault();
+            editarCategoria();
+        });
         console.log('Regenerado formulario de gestión de categoria');
+        mostrarProductos(catalogo.productos);
     }else{
         console.log('Ya existe');
     }
 };
 
-function insertarCategoria() {
+function insertarCategoria(nuevaCategoria) {
+    
+    let categoriaAAñadir;
+    if (nuevaCategoria) {
+        categoriaAAñadir = nuevaCategoria
+    }else{
+        categoriaAAñadir = frmNuevaCategoria[0].value.trim();
+    }
     fetch(url+"categorias/"+ext, {
         method: 'POST',
         headers: {
             'Content-Type':'application/json'
         },
-        body: JSON.stringify(frmNuevaCategoria[0].value.trim())
+        body: JSON.stringify(categoriaAAñadir)
     })
     .then(response => {
         if (!response.ok) {
@@ -137,7 +161,7 @@ function insertarCategoria() {
         })
     .then(data => {
         console.log('Categoría agregada con éxito:', data); // Hacemos algo con la respuesta (opcional)
-        gestor.categorias[data.name] = frmNuevaCategoria[0].value.trim();
+        gestor.categorias[data.name] = categoriaAAñadir;
         cargarCategorias(gestor.categorias);
     })
     .catch(error => {
@@ -146,6 +170,7 @@ function insertarCategoria() {
 };
 
 function borrarCategorias(){
+    
     const idCategoria = Object.keys(gestor.categorias).find(key => gestor.categorias[key] === frmBorrarCategoria[0].value.trim());
 
     if (idCategoria) {
@@ -163,6 +188,7 @@ function borrarCategorias(){
             // Elimina la categoría del gestor.categorias
             delete gestor.categorias[idCategoria];
             cargarCategorias(gestor.categorias); // Actualiza la lista de categorías en el formulario
+            mostrarProductos(catalogo.productos); // Muestra de nuevo los productos
         })
         .catch(error => {
             console.error('Error al borrar la categoría:', error);
@@ -171,6 +197,69 @@ function borrarCategorias(){
         console.error('No se encontró la categoría:', nombreCategoria);
     }
 };
+
+function editarCategoria(){    
+    
+    borrarCategorias();
+    insertarCategoria(frmEditarCategoria[1].value.trim());
+}
+
+function gestionProductos() {
+    if (!(document.getElementById('frmNuevoProducto'))) {
+        document.getElementById('formularios').innerHTML = "";
+        let salida =
+                '<form id="frmNuevoProducto" name="frmNuevoProducto" style="visibility: visible">' +
+                '<label class="encabezadoDoble"><h4>Nuevo producto:</h4></label>' +
+                '<span class="lineaDivisora"></span>'+
+                '<label class="encabezadoDoble"><h4>Precio del nuevo producto:</h4></label>' +
+                '<input type="text" id="txtNuevoProducto" class="comboInputs"/>' +
+                '<span class="lineaDivisora2"></span>'+
+                '<input type="text" id="txtNuevoPrecioProducto" class="comboInputs"/>' +
+                '<input type="submit" value="Guardar" />' +
+                '</form>' +
+                '<hr />' +
+                '<form id="frmBorrarProducto" name="frmBorrarProducto" style="visibility: visible">' +
+                '<label><h4>Producto a borrar:</h4></label>' +
+                '<input type="text" id="txtBorrarProducto" /><br /><br />' +
+                '<input type="submit" value="Borrar" />' +
+                '</form>' +
+                '<hr />' +
+                '<form id="frmEditarProducto" name="frmEditarProducto" style="visibility: visible">' +
+                '<label><h4>Producto a actualizar:</h4></label>' +
+                '<input type="text" id="txtActualizarProducto" disabled/><br />' +
+                '<label class="encabezadoDoble"><h4>Nuevo nombre para el producto</h4></label>' +
+                '<span class="lineaDivisora"></span>'+
+                '<label class="encabezadoDoble"><h4>Nuevo precio para el producto</h4></label>'+
+                '<input type="text" id="nuevotxtActualizarProducto" class="comboInputs" />' +
+                '<span class="lineaDivisora2"></span>'+
+                '<input type="text" id="nuevoPrecioActualizarProducto" class="comboInputs" /><br /><br />' +
+                '<input type="submit" value="Actualizar" />' +
+                '</form>';
+
+        document.getElementById('formularios').innerHTML=salida;
+        frmNuevoProducto.addEventListener('submit', ()=>{
+            event.preventDefault();
+            insertarProducto(frmNuevoProducto[0].value.trim(), frmNuevoProducto[1].value.trim());
+        });
+        frmBorrarProducto.addEventListener('submit', ()=>{
+            event.preventDefault();
+            borrarProducto();
+        });
+        frmEditarProducto.addEventListener('submit', ()=>{ 
+            event.preventDefault();
+            editarProducto();
+        });
+        console.log("Regenerando formulario de gestión de producto")
+    }else{
+        console.log('Ya existe');
+    }
+}
+function instertarProducto(nuevoProducto) {
+    let nuevoPrecio = frmNuevoProducto[1].value.trim();
+    catalogo.addProducto(catalogo.productos.length+1, nuevoProducto, nuevoPrecio, comboCategorias.selectedIndex);
+
+
+}
 
 extraerApi()
 .then (data => {
@@ -208,3 +297,7 @@ comboCategorias.addEventListener('change', () => {
 botonGestionCategoria.addEventListener('click', () => {
     gestionCategorias();
 });
+
+botonGestionProductos.addEventListener('click', ()=>{
+    gestionProductos();
+})

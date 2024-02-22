@@ -91,3 +91,30 @@ th {
   background-color: lightskyblue;
   margin-bottom: 5px;
 }
+
+/*? CSS añadido mio personal*/
+.encabezadoDoble h4{
+  display: inline;
+  font-size: 12px;
+}
+.lineaDivisora{
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.comboInputs{
+  display: inline;
+  width: 30%;
+  margin-right: 15px;
+  margin-left: 20px;
+}
+
+.lineaDivisora2{
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+  margin-left: 10px;
+}

@@ -47,14 +47,14 @@
         <hr />
         <form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="javascript:borrarCategorias()">
           <label><h4>Categoría a borrar:</h4></label>
-          <input type="text" id="txtBorrarCategoria" /><br /><br />
+          <input type="text" id="txtBorrarCategoria" disabled /><br /><br /> <!--! Añadimos el atributo disabled para evitar errorers por mano del usuario, ya que el campo se rellana automaticamente-->
           <input type="submit" value="Borrar" />
         </form>
         <hr />
         <!--^ Modificación-->
-        <form id="frmEditarCategoria" name="frmBorrarCategoria" style="visibility: visible">
+        <form id="frmEditarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="javascript:editarCategoria()">
           <label><h4>Categoría a actualizar:</h4></label>
-          <input type="text" id="txtActualizarCategoria" /><br />
+          <input type="text" id="txtActualizarCategoria" disabled /><br /> <!--! Añadimos el atributo disabled para evitar errorers por mano del usuario, ya que el campo se rellana automaticamente-->
           <label><h4>Nuevo nombre para la categoria</h4></label>
           <input type="text" if="nuevotxtActualizarCategoria" /><br /><br />
           <input type="submit" value="Actualizar" />

@@ -5,6 +5,7 @@ const comboCategorias = frmControles[0];
 const comboProductos = frmControles[1];
 const botonGestionCategoria = document.getElementById('btnGestionCategorias');
 const botonGestionProductos = document.getElementById('btnGestionProductos');
+let opcion = 0;
 
 gestor = new Gestor();
 catalogo = new Catalogo();
@@ -69,6 +70,7 @@ function cargarCategorias(categorias) {
 };
 
 function cargarProductos(productos) {
+    catalogo.productos=[];
     for (const key in productos) {
         if (Object.hasOwnProperty.call(productos, key)) {
             catalogo.addProducto(productos[key].idProducto, productos[key].nombreProducto, productos[key].precioUnidad, productos[key].idCategoria)
@@ -89,9 +91,14 @@ function mostrarProductos(productos) {
         }
     }
     //? Fragmento de codigo para el relleno automatico del campo de texto para borrar la categoria
-    let categorias = comboCategorias.querySelectorAll("option") //^ Introducimos dentro de la variable todos los options del comboBox
-    frmBorrarCategoria[0].value=categorias[comboCategorias.selectedIndex].textContent; //^ Igualamos el valor del input a el nombre de la categoria seleccionada
-    frmEditarCategoria[0].value=categorias[comboCategorias.selectedIndex].textContent; //^ Igualamos el valor del input a el nombre de la categoria seleccionada
+    let categorias = comboCategorias.querySelectorAll("option"); //^ Introducimos dentro de la variable todos los options del comboBox
+    if (opcion==1) {
+        frmBorrarCategoria[0].value=categorias[comboCategorias.selectedIndex].textContent; //^ Igualamos el valor del input a el nombre de la categoria seleccionada
+        frmEditarCategoria[0].value=categorias[comboCategorias.selectedIndex].textContent; //^ Igualamos el valor del input a el nombre de la categoria seleccionada
+    };
+    if (opcion==2){
+        frmNuevoProducto[0].value=categorias[comboCategorias.selectedIndex].textContent;
+    };
 };
 
 function gestionCategorias() {
@@ -140,18 +147,12 @@ function gestionCategorias() {
 
 function insertarCategoria(nuevaCategoria) {
     
-    let categoriaAAñadir;
-    if (nuevaCategoria) {
-        categoriaAAñadir = nuevaCategoria
-    }else{
-        categoriaAAñadir = frmNuevaCategoria[0].value.trim();
-    }
     fetch(url+"categorias/"+ext, {
         method: 'POST',
         headers: {
             'Content-Type':'application/json'
         },
-        body: JSON.stringify(categoriaAAñadir)
+        body: JSON.stringify(nuevaCategoria)
     })
     .then(response => {
         if (!response.ok) {
@@ -161,11 +162,12 @@ function insertarCategoria(nuevaCategoria) {
         })
     .then(data => {
         console.log('Categoría agregada con éxito:', data); // Hacemos algo con la respuesta (opcional)
-        gestor.categorias[data.name] = categoriaAAñadir;
+        gestor.categorias[data.name] = nuevaCategoria;
         cargarCategorias(gestor.categorias);
     })
     .catch(error => {
-        console.error('Error al agregar la categoría:', error); // Manejo de errores
+        console.error('Error al agregar la categoría:', error); 
+        console.log(nuevaCategoria)// Manejo de errores
     });
 };
 
@@ -209,9 +211,12 @@ function gestionProductos() {
         document.getElementById('formularios').innerHTML = "";
         let salida =
                 '<form id="frmNuevoProducto" name="frmNuevoProducto" style="visibility: visible">' +
+                '<h4>Categoria donde se va a introducir: </h4>'+ '<input type="text" id="txtCategoriaActual" class="comboInputs" disabled/>' + '<br>' + '<br>' +
+                '<div>' +
                 '<label class="encabezadoDoble"><h4>Nuevo producto:</h4></label>' +
                 '<span class="lineaDivisora"></span>'+
                 '<label class="encabezadoDoble"><h4>Precio del nuevo producto:</h4></label>' +
+                '</div>' +
                 '<input type="text" id="txtNuevoProducto" class="comboInputs"/>' +
                 '<span class="lineaDivisora2"></span>'+
                 '<input type="text" id="txtNuevoPrecioProducto" class="comboInputs"/>' +
@@ -220,7 +225,7 @@ function gestionProductos() {
                 '<hr />' +
                 '<form id="frmBorrarProducto" name="frmBorrarProducto" style="visibility: visible">' +
                 '<label><h4>Producto a borrar:</h4></label>' +
-                '<input type="text" id="txtBorrarProducto" /><br /><br />' +
+                '<input type="text" id="txtBorrarProducto" disabled /><br /><br />' +
                 '<input type="submit" value="Borrar" />' +
                 '</form>' +
                 '<hr />' +
@@ -237,12 +242,15 @@ function gestionProductos() {
                 '</form>';
 
         document.getElementById('formularios').innerHTML=salida;
+
         frmNuevoProducto.addEventListener('submit', ()=>{
             event.preventDefault();
-            insertarProducto(frmNuevoProducto[0].value.trim(), frmNuevoProducto[1].value.trim());
+            insertarProducto(frmNuevoProducto[1].value.trim(), Number(frmNuevoProducto[2].value.trim()));
+            mostrarProductos(catalogo.productos);
         });
         frmBorrarProducto.addEventListener('submit', ()=>{
             event.preventDefault();
+
             borrarProducto();
         });
         frmEditarProducto.addEventListener('submit', ()=>{ 
@@ -254,11 +262,64 @@ function gestionProductos() {
         console.log('Ya existe');
     }
 }
-function instertarProducto(nuevoProducto) {
-    let nuevoPrecio = frmNuevoProducto[1].value.trim();
-    catalogo.addProducto(catalogo.productos.length+1, nuevoProducto, nuevoPrecio, comboCategorias.selectedIndex);
+function insertarProducto(nuevoProducto, nuevoPrecio) {
+    const productoNuevo=new Producto(catalogo.productos.length+1, nuevoProducto, nuevoPrecio, comboCategorias.selectedIndex);
+    catalogo.addProducto(productoNuevo);
 
+    fetch(url+"productos/"+ext, {
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(productoNuevo)
+    })
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al agregar el producto'); // Si hay un error en la solicitud
+        }
+        return response.json(); // Si la solicitud es exitosa, leemos la respuesta como JSON
+        })
+    .then(data => {
+        console.log('Producto agregado con éxito:', data); // Hacemos algo con la respuesta (opcional)
+    })
+    .catch(error => {
+        console.error('Error al agregar la categoría:', error); 
+        console.log(nuevaCategoria)// Manejo de errores
+    });
+}
 
+function productoSeleccionado() {
+    frmBorrarProducto[0].value=comboProductos.querySelectorAll('option')[comboProductos.selectedIndex].textContent;
+    frmEditarProducto[0].value=comboProductos.querySelectorAll('option')[comboProductos.selectedIndex].textContent;
+}
+
+function borrarProducto() {
+    if (claveProducto) {
+        fetch(url + "productos/" + claveProducto + ext, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al borrar la categoría');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Categoría borrada con éxito:', data);
+            // Elimina la categoría del gestor.categorias
+            for (let i = 0; i < catalogo.productos.length; i++) {
+                if (catalogo.productos[i].nombreProducto == comboProductos.querySelectorAll('option')[comboProductos.selectedIndex].textContent) {
+                    catalogo.productos.splice(i,1)
+                }
+            }
+            mostrarProductos(catalogo.productos); // Muestra de nuevo los productos
+        })
+        .catch(error => {
+            console.error('Error al borrar la categoría:', error);
+        });
+    } else {
+        console.error('No se encontró la categoría:', claveProducto);
+    }
 }
 
 extraerApi()
@@ -292,12 +353,25 @@ comboComerciales.addEventListener('change', ()=>{
 
 comboCategorias.addEventListener('change', () => {
     mostrarProductos(catalogo.productos);
+    if (opcion==2) {
+        productoSeleccionado();
+    };
+});
+
+comboProductos.addEventListener('change', () =>{
+    if (opcion==2) {
+        productoSeleccionado();
+    };
 });
 
 botonGestionCategoria.addEventListener('click', () => {
+    opcion = 1;
     gestionCategorias();
 });
 
 botonGestionProductos.addEventListener('click', ()=>{
+    opcion = 2;
     gestionProductos();
+    frmNuevoProducto[0].value=comboCategorias.querySelectorAll("option")[comboCategorias.selectedIndex].textContent;
+    productoSeleccionado();
 })

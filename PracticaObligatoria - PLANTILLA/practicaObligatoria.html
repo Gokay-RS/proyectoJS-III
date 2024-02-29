@@ -39,20 +39,20 @@
       <hr />
       <!-- EJEMPLOS DE FORMULARIOS -->
       <div id="formularios">
-        <form id="frmNuevaCategoria" name="frmNuevaCategoria" style="visibility: visible" action="javascript:insertarCategoria()">
+        <form id="frmNuevaCategoria" name="frmNuevaCategoria" style="visibility: visible" onsubmit="event.preventDefault(); insertarCategoria(document.getElementById('txtNuevaCategoria').value)">
           <label><h4>Nueva categoría:</h4></label>
           <input type="text" id="txtNuevaCategoria" /><br /><br />
           <input type="submit" value="Guardar" />
         </form>
         <hr />
-        <form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="javascript:borrarCategorias()">
+        <form id="frmBorrarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="event.preventDefault(); borrarCategoria()">
           <label><h4>Categoría a borrar:</h4></label>
           <input type="text" id="txtBorrarCategoria" disabled /><br /><br /> <!--! Añadimos el atributo disabled para evitar errorers por mano del usuario, ya que el campo se rellana automaticamente-->
           <input type="submit" value="Borrar" />
         </form>
         <hr />
         <!--^ Modificación-->
-        <form id="frmEditarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="javascript:editarCategoria()">
+          <form id="frmEditarCategoria" name="frmBorrarCategoria" style="visibility: visible" action="event.preventDefault(); editarCategoria()">
           <label><h4>Categoría a actualizar:</h4></label>
           <input type="text" id="txtActualizarCategoria" disabled /><br /> <!--! Añadimos el atributo disabled para evitar errorers por mano del usuario, ya que el campo se rellana automaticamente-->
           <label><h4>Nuevo nombre para la categoria</h4></label>

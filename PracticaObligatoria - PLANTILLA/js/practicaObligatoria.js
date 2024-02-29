@@ -5,6 +5,7 @@ const comboCategorias = frmControles[0];
 const comboProductos = frmControles[1];
 const botonGestionCategoria = document.getElementById('btnGestionCategorias');
 const botonGestionProductos = document.getElementById('btnGestionProductos');
+const botonGestionComerciales = document.getElementById('btnGestionComerciales');
 let opcion = 0;
 
 gestor = new Gestor();
@@ -281,10 +282,10 @@ function insertarProducto(nuevoProducto, nuevoPrecio) {
         })
     .then(data => {
         console.log('Producto agregado con éxito:', data); // Hacemos algo con la respuesta (opcional)
+        mostrarProductos(catalogo.productos);
     })
     .catch(error => {
         console.error('Error al agregar la categoría:', error); 
-        console.log(nuevaCategoria)// Manejo de errores
     });
 }
 
@@ -294,6 +295,21 @@ function productoSeleccionado() {
 }
 
 function borrarProducto() {
+    let claveProducto='';
+    fetch(url + "productos/" + ext)
+    .then(res => { 
+        if (!res.ok) { 
+            throw new Error('Error en la solicitud');
+        }
+        return res.json();
+        }).then(data =>{
+            //console.log(Object.values(data));
+            claveProducto = Object.keys(data).find(key => data[key].idProducto == comboProductos.value);
+            console.log(claveProducto)
+        }).catch(error =>{
+            console.error('Error:', error);
+        });
+    
     if (claveProducto) {
         fetch(url + "productos/" + claveProducto + ext, {
             method: 'DELETE'
@@ -305,7 +321,7 @@ function borrarProducto() {
             return response.json();
         })
         .then(data => {
-            console.log('Categoría borrada con éxito:', data);
+            console.log('Producto borrado con éxito:', data);
             // Elimina la categoría del gestor.categorias
             for (let i = 0; i < catalogo.productos.length; i++) {
                 if (catalogo.productos[i].nombreProducto == comboProductos.querySelectorAll('option')[comboProductos.selectedIndex].textContent) {
@@ -320,6 +336,107 @@ function borrarProducto() {
     } else {
         console.error('No se encontró la categoría:', claveProducto);
     }
+}
+
+function editarProducto() {
+    
+    borrarProducto();
+    insertarProducto(frmEditarProducto[1].value.trim(), Number(frmEditarProducto.value));
+
+}
+
+function gestionComercial() {
+    if (!(document.getElementById('frmNuevoComercial'))) {
+        document.getElementById('formularios').innerHTML = "";
+        let salida =
+                '<form id="frmNuevoComercial" name="frmNuevoComercial" style="visibility: visible">' +
+                '<label><h4>Nuevo comercial:</h4></label>' +
+                '<input type="text" id="txtNuevoComercial" /><br /><br />' +
+                '<input type="submit" value="Guardar" />' +
+                '</form>' +
+                '<hr />' +
+                '<form id="frmBorrarComercial" name="frmBorrarComercial" style="visibility: visible">' +
+                '<label><h4>Comercial a borrar:</h4></label>' +
+                '<input type="text" id="txtBorrarComercial" disabled /><br /><br />' +
+                '<input type="submit" value="Borrar" />' +
+                '</form>' +
+                '<hr />' +
+                '<form id="frmEditarComercial" name="frmBorrarComercial" style="visibility: visible">' +
+                '<label><h4>Comercial a actualizar:</h4></label>' +
+                '<input type="text" id="txtActualizarComercial" disabled /><br />' +
+                '<label><h4>Nuevo nombre para la comercial</h4></label>' +
+                '<input type="text" if="nuevotxtActualizarComercial" /><br /><br />' +
+                '<input type="submit" value="Actualizar" />' +
+                '</form>';
+                
+                document.getElementById('formularios').innerHTML=salida;
+                console.log("Regenerando formulario de gestión de comerciales")
+                frmNuevoComercial.addEventListener('submit', ()=>{
+                    event.preventDefault();
+                    insertarComercial(frmNuevoComercial[0].value.trim());
+                });
+                frmBorrarComercial.addEventListener('submit', ()=>{
+                    event.preventDefault();
+                    borrarComercial(comboComerciales.value);
+                });
+                frmEditarComercial.addEventListener('submit', ()=>{
+                    event.preventDefault();
+                    editarComercial();
+                });
+            }else{
+                console.log('Ya existe');
+            }
+};
+
+function insertarComercial(nuevoComercial) {
+    fetch(url+"comerciales/"+ext, {
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(nuevoComercial)
+    })
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al agregar el comercial'); // Si hay un error en la solicitud
+        }
+        return response.json(); // Si la solicitud es exitosa, leemos la respuesta como JSON
+        })
+    .then(data => {
+        console.log('Comercial agregado con éxito:', data); // Hacemos algo con la respuesta (opcional)
+    })
+    .catch(error => {
+        console.error('Error al agregar el comercial:', error); 
+        console.log(nuevoComercial)// Manejo de errores
+    });
+}
+
+function comercialSeleccionado() {
+    frmBorrarComercial[0].value = comboComerciales.querySelectorAll('option')[comboComerciales.selectedIndex].textContent;
+    frmEditarComercial[0].value = comboComerciales.querySelectorAll('option')[comboComerciales.selectedIndex].textContent;
+}
+
+function borrarComercial(clave) {
+    fetch(url + "comerciales/" + clave + ext, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al borrar el comercial');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Comercial borrado con éxito:', data);
+    })
+    .catch(error => {
+        console.error('Error al borrar la categoría:', error);
+    });
+}
+
+function editarComercial() {
+    borrarComercial(comboComerciales.value);
+    insertarComercial(frmEditarComercial[1].value.trim());
 }
 
 extraerApi()
@@ -349,6 +466,9 @@ comboComerciales.addEventListener('change', ()=>{
         document.getElementById('todosClientes').parentNode.removeChild(document.getElementById('todosClientes'));
         mostrarClientes(gestor.clientes);
     }
+    if (opcion==3) {
+        comercialSeleccionado();
+    }
 });
 
 comboCategorias.addEventListener('change', () => {
@@ -375,3 +495,9 @@ botonGestionProductos.addEventListener('click', ()=>{
     frmNuevoProducto[0].value=comboCategorias.querySelectorAll("option")[comboCategorias.selectedIndex].textContent;
     productoSeleccionado();
 })
+
+botonGestionComerciales.addEventListener('click', ()=>{
+    opcion = 3;
+    gestionComercial();
+    comercialSeleccionado();
+});
